@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wetterstation</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>Wetterstation | Dashboard</h1>
+    <main class="main-wrapper">
+      <div class="card-container">
+        <div class="card">
+          <div class="card-header">💧 Luftfeuchtigkeit:</div>
+          <div class="card-content humidity">0%</div>
+        </div>
+        <div class="card">
+          <div class="card-header">🌡️ Temperatur:</div>
+          <div class="card-content temperature">0C</div>
+        </div>
+        <div class="card">
+          <div class="card-header">⚙️ Status:</div>
+          <div class="card-content">🟩</div>
+        </div>
+        <div class="card">
+          <div class="card-header">⏱️ Zeit seit letzter Erfassung:</div>
+          <div class="card-content time">00:00</div>
+        </div>
+      </div>
+
+      <div class="bottom-sections">
+        <form class="settings-container" onsubmit="saveConfig(event)">
+          <h2>Konfiguration</h2>
+          <div class="card-content">
+            <div class="messung">
+              <label for="messvorgang-intervall"
+                >Messvorgang starten jede:
+              </label>
+              <select id="messvorgang-intervall" name="messvorgang-intervall">
+                <option value="stunde-2">2 Stunden</option>
+                <option value="stunde-1">Stunde</option>
+                <option value="minute-30">30 Minuten</option>
+                <option value="minute-15">15 Minuten</option>
+              </select>
+            </div>
+
+            <button type="button">Messvorgang starten</button>
+
+            <h3>Status LED</h3>
+
+            <div class="an-aus">
+              <label>
+                <input type="radio" name="status-led" id="radio-1"/>
+                An
+              </label>
+              <label>
+                <input type="radio" name="status-led" id="radio-2" />
+                Aus
+              </label>
+            </div>
+
+            <h3>Farben der Status</h3>
+
+            <div class="status">
+              <label for="color-1">Standby:</label>
+              <input type="color" id="color-1" name="color-1"/>
+            </div>
+
+            <div class="status">
+              <label for="color-2">Sleep:</label>
+              <input type="color" id="color-2" name="color-2"/>
+            </div>
+
+            <div class="status">
+              <label for="color-3">Zu hohe Temperatur:</label>
+              <input type="color" id="color-3" name="color-3"/>
+            </div>
+
+            <div class="status">
+              <label for="color-4">Messung im Gange:</label>
+              <input type="color" id="color-4" name="color-4"/>
+            </div>
+
+            <div class="status">
+              <label for="color-5">Kein WLAN:</label>
+              <input type="color" id="color-5" name="color-5"/>
+            </div>
+
+            <input type="submit" value="Konfiguration speichern">
+          </div>
+        </form>
+
+        <div class="graph-container">
+          <h2>Verlauf</h2>
+          <div class="graph-box">
+            <canvas id="graph"> </canvas>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
