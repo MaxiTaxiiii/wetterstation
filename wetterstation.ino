@@ -52,7 +52,8 @@ void setup() {
 
   if(!checkFile(LittleFS,"/config.json")) {
     Serial.println("Failed to open config: generating default config");
-    writeFile(LittleFS,"/config.json","{\"ledOn\":true,\"interval\":7200000,\"standby\":\"#1E90FF\",\"sleep\":\"#708090\",\"highTemperature\":\"#FFA500\",\"measurementInProcess\":\"#FFD700\",\"noWlan\":\"#FF4C4C\"}");
+    const char* config = "{\"ledOn\":true,\"interval\":7200000,\"statusColors\":{\"standby\":\"#1E90FF\",\"sleep\":\"#708090\",\"highTemperature\":\"#FFA500\",\"measurementInProcess\":\"#FFD700\",\"noWlan\":\"#FF4C4C\"}}";
+    writeFile(LittleFS,"/config.json",config);
   }
 
   server.on("/",HTTP_GET,[](AsyncWebServerRequest* request){

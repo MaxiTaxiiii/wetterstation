@@ -1,87 +1,46 @@
-
-function convertMs(ms) {
-  const sec = 1000;
-  const min = sec * 60;
-  const hour = min * 60;
-  const day = hour * 24;
-
-  return {
-      days: Math.floor(ms / day),
-      hours: Math.floor((ms % day) / hour),
-      minutes: Math.floor((ms % hour) / min),
-      seconds: Math.floor((ms % min) / sec),
-      milliseconds: ms % 1000
-  };
-}
+let host = null;
 
 window.onload = async () => {
-  const ip = window.location.hostname;
-  try {
-    const response = await fetch(`http://${ip}/api/config`);
+  host = window.location.hostname;
 
-    if(!response.ok) {
+  try {
+    const response = await fetch(`http://${host}/api/config`);
+
+    if (!response.ok) {
       throw new Error('Network response was not ok');
     }
 
     const data = await response.json();
 
-    document.getElementById('radio-1').checked = data.ledOn;
-    document.getElementById('radio-2').checked = !data.ledOn;
+    document.getElementById('interval').value = data.interval;
+    document.getElementById('radio-on').checked = data.ledOn;
+    document.getElementById('radio-off').checked = !data.ledOn;
 
-    const intervalElement = document.getElementById('messvorgang-intervall');
-    const interval = convertMs(data.interval);
+    const colors = data.statusColors;
 
-    if(interval.hours === 2) {
-      intervalElement.value = 'stunde-2';
-    } else if(interval.hours === 1) {
-      intervalElement.value = 'stunde-1';
-    } else if(interval.minutes === 30) {
-      intervalElement.value = 'minute-30';
-    } else if(interval.minutes === 15) {
-      intervalElement.value = 'minute-15';
-    }
-
-    document.getElementById('color-1').value = data.standby;
-    document.getElementById('color-2').value = data.sleep;
-    document.getElementById('color-3').value = data.highTemperature;
-    document.getElementById('color-4').value = data.measurementInProcess;
-    document.getElementById('color-5').value = data.noWlan;
-
-  } catch(error) {
+    document.getElementById('color-1').value = colors.standby;
+    document.getElementById('color-2').value = colors.sleep;
+    document.getElementById('color-3').value = colors.highTemperature;
+    document.getElementById('color-4').value = colors.measurementInProcess;
+    document.getElementById('color-5').value = colors.noWlan;
+  } catch (error) {
     console.error('Error: ' + error);
   }
-}
+};
 
 async function saveConfig(event) {
   event.preventDefault();
-  const intervalValue = document.getElementById('messvorgang-intervall').value;
-  let intervalMillis = 0;
-  switch(intervalValue) {
-    case 'stunde-2':
-      intervalMillis = 7200000;
-      break;
-    case 'stunde-1':
-      intervalMillis = 3600000;
-      break;
-    case 'minute-30':
-      intervalMillis = 1800000;
-      break;
-    case 'minute-15':
-      intervalMillis = 900000;
-      break;
-  }
-      
-  const ledPower = document.getElementById('radio-1').checked;
+
+  const ledPower = document.getElementById('radio-on').checked;
+  const intervalMillis = document.getElementById('interval').value;
   const standbyColor = document.getElementById('color-1').value;
   const sleepColor = document.getElementById('color-2').value;
   const highTempColor = document.getElementById('color-3').value;
   const measuringColor = document.getElementById('color-4').value;
   const noWifiColor = document.getElementById('color-5').value;
 
-  const ip = window.location.hostname;
-
   try {
-    const response = await fetch(`http://${ip}/api/config`, {
+    const response = await fetch(`http://${host}/api/config`, {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',
@@ -89,11 +48,13 @@ async function saveConfig(event) {
       body: JSON.stringify({
         ledOn: ledPower,
         interval: intervalMillis,
-        standby: standbyColor,
-        sleep: sleepColor,
-        highTemperature: highTempColor,
-        measurementInProcess: measuringColor,
-        noWlan: noWifiColor,
+        statusColors: {
+          standby: standbyColor,
+          sleep: sleepColor,
+          highTemperature: highTempColor,
+          measurementInProcess: measuringColor,
+          noWlan: noWifiColor,
+        },
       }),
     });
 
