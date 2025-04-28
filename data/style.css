@@ -1,133 +1,136 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
 * {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-    font-family: Roboto, Arial;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: Roboto, Arial;
 }
 
 h1 {
-    text-align: center;
-    padding: 3rem;
+  text-align: center;
+  padding: 3rem;
 }
 
 h2 {
-    padding: 1rem;
+  padding: 1rem;
 }
 
 .card-container {
-    display: flex;
-    gap: 1rem;
-    max-width: 1000px;
-    margin: 2rem auto;
-    padding: 0 1rem;
+  display: flex;
+  gap: 1rem;
+  max-width: 1000px;
+  width: 100%;
+  margin: 2rem auto;
+  padding: 0 1rem;
 }
 
 .card {
-    background-color: white;
-    padding: 1.5rem;
-    text-align: center;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    white-space: nowrap;
-    border: 2px solid black;
+  background-color: white;
+  padding: 1.5rem;
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  border: 2px solid black;
+  flex: 1 1 0;
 }
 
 .card-header {
-    padding: 1rem;
-    font-weight: bold;
+  padding: 1rem;
+  font-weight: bold;
 }
 
 .status {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .status label {
-    flex: 1;
+  flex: 1;
 }
 
 .main-wrapper {
-    display: flex;
-    min-height: 100dvh;
-    flex-direction: column;
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
 }
 
 .bottom-sections {
-    display: flex;
-    gap: 2rem;
-    max-width: 1000px;
-    width: 100%;
-    margin: 2rem auto;
-    padding: 0 1rem;
+  display: flex;
+  gap: 2rem;
+  max-width: 1000px;
+  width: 100%;
+  margin: 2rem auto;
+  padding: 0 1rem;
 }
 
 .bottom-sections > * {
-    flex: 1 1 0;
+  flex: 1 1 0;
 }
 
 .card-content {
-    display: flex;
-    gap: 1rem;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .status {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .on-off {
-    padding: 0.25rem;
+  padding: 0.25rem;
 }
 
-.settings-container, .graph-container {
-    background-color: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border: 2px solid black;
+.settings-container,
+.graph-container {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border: 2px solid black;
 }
 
 .graph-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .graph-box {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 .graph-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 #graph {
-    display: block;
-    max-width: 100%;
-    height: auto;
-    max-height: 100%;
+  display: block;
+  max-width: 100%;
+  height: auto;
+  max-height: 100%;
 }
 
-@media screen and (max-width: 1000px) {
-    .card-container, .bottom-sections {
-        flex-direction: column;
-    }
+@media (max-width: 1000px) {
+  .card-container,
+  .bottom-sections {
+    flex-direction: column;
+  }
 }
-

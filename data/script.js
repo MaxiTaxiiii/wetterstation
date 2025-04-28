@@ -1,10 +1,7 @@
-let host = null;
-
-window.onload = async () => {
-  host = window.location.hostname;
-
+// Sobald die Seite geladen ist, dann fetch die config datei vom ESP32 und aktualisiere die Konfigurationsfläche
+window.addEventListener('load', async () => {
   try {
-    const response = await fetch(`http://${host}/api/config`);
+    const response = await fetch(`/api/config`);
 
     if (!response.ok) {
       throw new Error('Network response was not ok');
@@ -13,48 +10,65 @@ window.onload = async () => {
     const data = await response.json();
 
     document.getElementById('interval').value = data.interval;
-    document.getElementById('radio-on').checked = data.ledOn;
-    document.getElementById('radio-off').checked = !data.ledOn;
+    document.getElementById('radio-on').checked = data.led;
+    document.getElementById('radio-off').checked = !data.led;
 
-    const colors = data.statusColors;
+    document.getElementById('color-1').value = data.standby;
+    document.getElementById('color-2').value = data.sleep;
+    document.getElementById('color-3').value = data.highTemperature;
+    document.getElementById('color-4').value = data.measurementInProcess;
+    document.getElementById('color-5').value = data.noWlan;
 
-    document.getElementById('color-1').value = colors.standby;
-    document.getElementById('color-2').value = colors.sleep;
-    document.getElementById('color-3').value = colors.highTemperature;
-    document.getElementById('color-4').value = colors.measurementInProcess;
-    document.getElementById('color-5').value = colors.noWlan;
+    fetchWeatherData();
+    setInterval(fetchWeatherData, 30000);
   } catch (error) {
     console.error('Error: ' + error);
   }
-};
+});
 
-async function saveConfig(event) {
-  event.preventDefault();
-
-  const ledPower = document.getElementById('radio-on').checked;
-  const intervalMillis = document.getElementById('interval').value;
-  const standbyColor = document.getElementById('color-1').value;
-  const sleepColor = document.getElementById('color-2').value;
-  const highTempColor = document.getElementById('color-3').value;
-  const measuringColor = document.getElementById('color-4').value;
-  const noWifiColor = document.getElementById('color-5').value;
-
+async function fetchWeatherData() {
   try {
-    const response = await fetch(`http://${host}/api/config`, {
+    const response = await fetch('/api/data');
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+    document.getElementById('humidity').innerHTML = data.humidity + '%';
+    document.getElementById('temperature').innerHTML = data.temperature + 'C';
+    updateGraph(new Date(data.timestamp), data.temperature, data.humidity);
+  } catch (error) {
+    console.error('Error: ' + error);
+  }
+}
+
+const processChange = debounce(saveChanges, 350);
+
+async function saveChanges(event) {
+  try {
+    const key = event.target.name;
+
+    // Verarbeite die Values
+    let value = null;
+    switch (key) {
+      case 'interval':
+        value = Number(event.target.value);
+        break;
+      case 'led':
+        value = JSON.parse(event.target.value);
+        break;
+      default:
+        value = event.target.value;
+    }
+
+    const response = await fetch('/api/config', {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        ledOn: ledPower,
-        interval: intervalMillis,
-        statusColors: {
-          standby: standbyColor,
-          sleep: sleepColor,
-          highTemperature: highTempColor,
-          measurementInProcess: measuringColor,
-          noWlan: noWifiColor,
-        },
+        [key]: value,
       }),
     });
 
@@ -64,33 +78,132 @@ async function saveConfig(event) {
 
     const data = await response.json();
     if (data.status === 'ok') {
-      alert('Ihre Konfiguration wurde erfolgreich gespeichert!');
+      console.log('Speichern war erfolgreich!');
     }
   } catch (error) {
     console.error('Error: ' + error);
-    alert('Etwas lief schief beim Speichern der Konfiguration');
   }
 }
 
-const xValues = [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150];
-const yValues = [7, 8, 8, 9, 9, 9, 10, 11, 14, 14, 15];
+document.querySelector('button').addEventListener('click', async () => {
+  try {
+    const response = await fetch('/api/measure');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+    if (data.status === 'ok') {
+      console.log('Request war erfolgreich!');
+    }
+  } catch (error) {
+    console.error('Error: ' + error);
+  }
+});
+
+// füge eventlisteners für alle inputs hinzu
+document.querySelectorAll('input').forEach((element) => {
+  element.addEventListener('input', () => processChange(event));
+});
+
+// füge eventlistener für das dropdown menu
+document
+  .querySelector('select')
+  .addEventListener('change', () => processChange(event));
+
+function debounce(func, timeout) {
+  let id;
+  return (...args) => {
+    clearTimeout(id);
+    id = setTimeout(() => {
+      func.apply(this, args);
+    }, timeout);
+  };
+}
+
+const timestamps = [];
+const temperatureValues = [];
+const humidityValues = [];
 
 const ctx = document.getElementById('graph').getContext('2d');
 
-new Chart(ctx, {
+const chart = new Chart(ctx, {
   type: 'line',
   data: {
-    labels: xValues,
+    labels: timestamps,
     datasets: [
       {
-        backgroundColor: 'rgba(0,0,255,1.0)',
-        borderColor: 'rgba(0,0,255,0.1)',
-        data: yValues,
+        label: 'Temperature (°C)',
+        backgroundColor: 'rgb(255,145,0)',
+        borderColor: 'rgb(255,145,0)',
+        data: temperatureValues,
+        fill: false,
+      },
+      {
+        label: 'Humidity (%)',
+        backgroundColor: 'rgb(0, 123, 255)',
+        borderColor: 'rgb(0, 123, 255)',
+        data: humidityValues,
+        fill: false,
       },
     ],
   },
   options: {
     responsive: true,
     maintainAspectRatio: false,
+    scales: {
+      x: {
+        type: 'time',
+        time: {
+          tooltipFormat: 'yyyy-MM-dd HH:mm',
+          displayFormats: {
+            millisecond: 'HH:mm',
+            second: 'HH:mm',
+            minute: 'HH:mm',
+            hour: 'HH:mm',
+          },
+          parser: function (date) {
+            return new Date(
+              Date.UTC(
+                date.getUTCFullYear(),
+                date.getUTCMonth(),
+                date.getUTCDate(),
+                date.getUTCHours() - 2,
+                date.getUTCMinutes(),
+                date.getUTCSeconds()
+              )
+            );
+          },
+        },
+        ticks: {
+          source: 'auto',
+          autoSkip: true,
+        },
+        title: {
+          display: true,
+          text: 'Time',
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Value',
+        },
+      },
+    },
   },
 });
+
+function updateGraph(timestamp, temperature, humidity) {
+  const interval = document.getElementById('interval').value;
+  if (
+    timestamps.length === 0 ||
+    timestamp.getTime() - timestamps[timestamps.length - 1].getTime() >=
+      interval
+  ) {
+    timestamps.push(timestamp);
+    temperatureValues.push(temperature);
+    humidityValues.push(humidity);
+    chart.update();
+  }
+}

@@ -12,19 +12,11 @@
       <div class="card-container">
         <div class="card">
           <div class="card-header">💧 Luftfeuchtigkeit:</div>
-          <div class="card-content humidity">0%</div>
+          <div class="card-content" id="humidity">0%</div>
         </div>
         <div class="card">
           <div class="card-header">🌡️ Temperatur:</div>
-          <div class="card-content temperature">0C</div>
-        </div>
-        <div class="card">
-          <div class="card-header">⚙️ Status:</div>
-          <div class="card-content">🟩</div>
-        </div>
-        <div class="card">
-          <div class="card-header">⏱️ Zeit seit letzter Erfassung:</div>
-          <div class="card-content time">00:00</div>
+          <div class="card-content" id="temperature">0C</div>
         </div>
       </div>
 
@@ -39,6 +31,7 @@
                 <option value="3600000">Stunde</option>
                 <option value="1800000">30 Minuten</option>
                 <option value="900000">15 Minuten</option>
+                <option value="300000">5 Minuten</option>
               </select>
             </div>
 
@@ -48,11 +41,11 @@
 
             <div class="on-off">
               <label>
-                <input type="radio" name="status-led" id="radio-on" />
+                <input type="radio" name="led" value="true" id="radio-on" />
                 An
               </label>
               <label>
-                <input type="radio" name="status-led" id="radio-off" />
+                <input type="radio" name="led" value="false" id="radio-off" />
                 Aus
               </label>
             </div>
@@ -61,30 +54,29 @@
 
             <div class="status">
               <label for="color-1">Standby:</label>
-              <input type="color" id="color-1" name="color-1" />
+              <input type="color" id="color-1" name="standby" />
             </div>
 
             <div class="status">
               <label for="color-2">Sleep:</label>
-              <input type="color" id="color-2" name="color-2" />
+              <input type="color" id="color-2" name="sleep" />
             </div>
 
             <div class="status">
               <label for="color-3">Zu hohe Temperatur:</label>
-              <input type="color" id="color-3" name="color-3" />
+              <input type="color" id="color-3" name="highTemperature" />
             </div>
 
             <div class="status">
               <label for="color-4">Messung im Gange:</label>
-              <input type="color" id="color-4" name="color-4" />
+              <input type="color" id="color-4" name="measurementInProcess" />
             </div>
 
             <div class="status">
               <label for="color-5">Kein WLAN:</label>
-              <input type="color" id="color-5" name="color-5" />
+              <input type="color" id="color-5" name="noWlan" />
             </div>
 
-            <input type="submit" value="Konfiguration speichern" />
           </div>
         </form>
 
@@ -97,6 +89,8 @@
       </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
     <script src="script.js"></script>
   </body>
 </html>
